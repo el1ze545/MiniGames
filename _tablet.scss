@@ -1,32 +1,87 @@
-@media (min-width: 767px) and (max-width: 1200px) {
+@media (min-width: 768px) and (max-width: 1200px) {
     .center {
-        padding-left: 16px;
-        padding-right: 16px;
+        padding-left: 24px;
+        padding-right: 24px;
     }
 
     .top__content {
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .top__btn {
-        margin: 36px auto 0px;
+        margin: 36px auto 0;
     }
 
+    /* Секция "Об играх" — делаем адаптивной вместо полного скрытия */
     .about {
-        display: none;
-    }   
+        padding-top: 60px;
+        padding-bottom: 40px;
+        background-position: center top;
+    }
+
+    .about__content-title {
+        font-size: 48px;
+        line-height: 58px;
+        text-align: center;
+    }
+
+    .about__content-text {
+        font-size: 18px;
+        line-height: 26px;
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .about__cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        justify-items: center;
+        padding-top: 48px;
+    }
+
+    .about__cards-container {
+        gap: 24px;
+        width: 100%;
+        max-width: 340px;
+    }
+
+    .about__cards-item {
+        width: 100%;
+        max-width: 340px;
+        height: auto;
+        min-height: 380px;
+    }
+
+    .about__cards-item_big,
+    .about__cards-item_biggest {
+        height: auto;
+        min-height: 380px;
+    }
+
+    .about__cards-title {
+        font-size: 24px;
+        line-height: 30px;
+    }
 
     .games {
         padding-bottom: 80px;
-        padding-top: 80px;
+        padding-top: 60px;
     }
 
     .games__title {
         text-align: center;
+        font-size: 48px;
+        line-height: 58px;
+        padding-bottom: 48px;
     }
 
     .games__container {
         align-items: center;
+        gap: 28px;
     }
 
     .games__content {
@@ -35,21 +90,34 @@
         width: 100%;
         height: auto;
         overflow: hidden;
-        max-width: 600px;
+        max-width: 560px;
     }
 
     .games__content-left {
-        padding: 29px 29px 32px 29px;
+        padding: 32px 28px 36px;
+    }
+
+    .games__content-title {
+        font-size: 36px;
+        line-height: 44px;
+    }
+
+    .games__content-text {
+        font-size: 18px;
+        line-height: 26px;
     }
 
     .games__content-image {
         height: auto;
         width: 100%;
+        max-height: 320px;
+        object-fit: cover;
     }
 
     .games__content-btn {
-        margin: 32px auto 0px;
+        margin: 28px auto 0;
+        width: 220px;
+        height: 56px;
+        font-size: 18px;
     }
-
-    
 }
