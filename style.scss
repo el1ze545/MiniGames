@@ -14,8 +14,8 @@ body {
 }
 
 .center {
-    padding-left: calc(50% - 600px);
-    padding-right: calc(50% - 600px);
+    padding-left: max(16px, calc(50% - 600px));
+    padding-right: max(16px, calc(50% - 600px));
 }
 
 .top {
@@ -50,7 +50,7 @@ body {
     letter-spacing: 0px;
 }
 
-.top__text_bold {
+.top__text-bold {
     color: rgb(32, 32, 39);
     font-family: Montserrat;
     font-size: 24px;
@@ -82,6 +82,11 @@ body {
     
 }
 
+// Вторая версия кнопки «Поехали!» — для планшета и телефона (там блока «Об играх» нет)
+.top__btn_mobile {
+    display: none;
+}
+
 .top__btn_hover:hover {
     background: white;
     box-sizing: border-box;
@@ -101,7 +106,8 @@ body {
         transform: translateX(0%);
     }
     to {
-        transform: translateX(-100%);
+        // список в HTML продублирован, поэтому сдвигаем ровно на половину ленты
+        transform: translateX(-50%);
     }
 }
 
@@ -112,9 +118,20 @@ body {
     background-size: cover; 
     padding-top: 27px;
     padding-bottom: 27px;
+    // без этого лента шире экрана растягивает страницу на планшетах и телефонах
+    overflow: hidden;
+}
+
+.scroll__track {
     display: flex;
-    animation: scroll-left linear 10s infinite;
-    animation-direction: normal;
+    width: max-content;
+    animation: scroll-left linear 30s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scroll__track {
+        animation: none;
+    }
 }
 
 .scroll-text {
@@ -195,7 +212,8 @@ body {
     border-radius: 30px;
     box-shadow: 0px 12.61px 42.25px -7.57px rgba(0, 0, 0, 0.13);
     background: rgb(255, 255, 255);
-    width: 378px;
+    width: 100%;
+    max-width: 378px;
     height: 473px;
     cursor: pointer;
     transition: 1s;
@@ -371,5 +389,6 @@ body {
     letter-spacing: 0px;
 }
 
+@import 'game-modal';
 @import 'mobile';
 @import 'tablet';
