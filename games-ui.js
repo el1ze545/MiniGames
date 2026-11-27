@@ -1,4 +1,17 @@
+// Склонение: plural(1, 'попытку', 'попытки', 'попыток') -> 'попытку'
+function plural(n, one, few, many) {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return one;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+  return many;
+}
+
 const gameModal = {
+  // token растёт при каждом закрытии окна. Игры с таймерами сверяют его,
+  // чтобы не «оживить» уже закрытое окно
+  token: 0,
+  lastFocus: null,
   overlay: null,
   titleEl: null,
   bodyEl: null,
@@ -11,9 +24,9 @@ const gameModal = {
     overlay.id = 'game-modal';
     overlay.className = 'game-modal';
     overlay.innerHTML = `
-      <div class="game-modal__dialog">
+      <div class="game-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="game-modal-title">
         <button class="game-modal__close" type="button" aria-label="Закрыть">&times;</button>
-        <h2 class="game-modal__title"></h2>
+        <h2 class="game-modal__title" id="game-modal-title"></h2>
         <div class="game-modal__body"></div>
       </div>
     `;
@@ -29,14 +42,36 @@ const gameModal = {
       if (e.target === overlay) this.close();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && overlay.classList.contains('game-modal_open')) {
+      if (!overlay.classList.contains('game-modal_open')) return;
+
+      if (e.key === 'Escape') {
         this.close();
+        return;
+      }
+
+      // Tab не должен «убегать» за окно на страницу под ним
+      if (e.key === 'Tab') {
+        const focusable = overlay.querySelectorAll('button:not([disabled]), input:not([disabled])');
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     });
   },
 
   open(title, contentHtml) {
     this.init();
+    // запоминаем, откуда открыли окно, только при первом открытии (не при перерисовке)
+    if (!this.overlay.classList.contains('game-modal_open')) {
+      this.lastFocus = document.activeElement;
+    }
     this.titleEl.textContent = title;
     this.bodyEl.innerHTML = contentHtml;
     this.overlay.classList.add('game-modal_open');
@@ -44,10 +79,14 @@ const gameModal = {
   },
 
   close() {
-    if (!this.overlay) return;
+    if (!this.overlay || !this.overlay.classList.contains('game-modal_open')) return;
+    this.token += 1;
     this.overlay.classList.remove('game-modal_open');
     document.body.style.overflow = '';
     this.bodyEl.innerHTML = '';
+    if (this.lastFocus && typeof this.lastFocus.focus === 'function') {
+      this.lastFocus.focus();
+    }
   },
 
   setBody(html) {
@@ -77,7 +116,7 @@ function guessNumber() {
 
   function check() {
     const value = Number(input.value);
-    if (!input.value || isNaN(value) || value < 1 || value > 100) {
+    if (!input.value || !Number.isInteger(value) || value < 1 || value > 100) {
       message.textContent = 'Введи число от 1 до 100';
       message.className = 'game-ui__message game-ui__message_error';
       return;
@@ -87,7 +126,7 @@ function guessNumber() {
     attemptsEl.textContent = `Попыток: ${attempts}`;
 
     if (value === secret) {
-      message.textContent = `Молодец! Число ${secret} угадано за ${attempts} попыток.`;
+      message.textContent = `Молодец! Число ${secret} угадано за ${attempts} ${plural(attempts, 'попытку', 'попытки', 'попыток')}.`;
       message.className = 'game-ui__message game-ui__message_success';
       btn.disabled = true;
       input.disabled = true;
@@ -119,12 +158,16 @@ function simpleArithmetic() {
 
   function makeExpression() {
     const op = operations[Math.floor(Math.random() * operations.length)];
-    let a = Math.floor(Math.random() * 10) + 1;
-    let b = Math.floor(Math.random() * 10) + 1;
-    if (op === '/') {
-      a = a * b;
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+
+    switch (op) {
+      case '+': return { text: `${a} + ${b}`, answer: a + b };
+      case '-': return { text: `${a} - ${b}`, answer: a - b };
+      case '*': return { text: `${a} * ${b}`, answer: a * b };
+      // делим произведение на b, чтобы ответ всегда был целым
+      default:  return { text: `${a * b} / ${b}`, answer: a };
     }
-    return { text: `${a} ${op} ${b}`, answer: eval(`${a} ${op} ${b}`) };
   }
 
   let current = makeExpression();
@@ -249,6 +292,7 @@ function gameQuiz() {
 
   let index = 0;
   let score = 0;
+  const token = gameModal.token;
 
   function showQuestion() {
     if (index >= quiz.length) {
@@ -292,6 +336,8 @@ function gameQuiz() {
         }
 
         setTimeout(() => {
+          // окно закрыли за время паузы — ничего не открываем заново
+          if (token !== gameModal.token) return;
           index += 1;
           showQuestion();
         }, 900);

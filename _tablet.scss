@@ -1,4 +1,4 @@
-@media (min-width: 768px) and (max-width: 1200px) {
+@media (min-width: 768px) and (max-width: 1199.98px) {
     .center {
         padding-left: 24px;
         padding-right: 24px;
@@ -11,60 +11,27 @@
         align-items: center;
     }
 
+    .top__title {
+        font-size: 48px;
+        line-height: 59px;
+    }
+
     .top__btn {
         margin: 36px auto 0;
     }
 
-    /* Секция "Об играх" — делаем адаптивной вместо полного скрытия */
+    // Блок «Об играх» показываем только на десктопе
     .about {
-        padding-top: 60px;
-        padding-bottom: 40px;
-        background-position: center top;
+        display: none;
     }
 
-    .about__content-title {
-        font-size: 48px;
-        line-height: 58px;
-        text-align: center;
+    // Кнопка «Поехали!» ведёт сразу к играм
+    .top__btn_desktop {
+        display: none;
     }
 
-    .about__content-text {
-        font-size: 18px;
-        line-height: 26px;
-        text-align: center;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .about__cards {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 24px;
-        justify-items: center;
-        padding-top: 48px;
-    }
-
-    .about__cards-container {
-        gap: 24px;
-        width: 100%;
-        max-width: 340px;
-    }
-
-    .about__cards-item {
-        width: 100%;
-        max-width: 340px;
-        height: auto;
-        min-height: 380px;
-    }
-
-    .about__cards-item_big,
-    .about__cards-item_biggest {
-        height: auto;
-        min-height: 380px;
-    }
-
-    .about__cards-title {
-        font-size: 24px;
-        line-height: 30px;
+    .top__btn_mobile {
+        display: flex;
     }
 
     .games {
